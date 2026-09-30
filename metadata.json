@@ -1,0 +1,6 @@
+{
+  "name": "NIJOR NEWS | নিজোর নিউজ",
+  "description": "Premium Bangla news portal focused primarily on the Chittagong Hill Tracts (পার্বত্য চট্টগ্রাম) and Bangladesh.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
