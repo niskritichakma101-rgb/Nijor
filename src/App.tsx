@@ -23,13 +23,61 @@ import { AdminDashboard } from './pages/AdminDashboard';
 import { X, Home, MapPin, Shield, LogOut } from 'lucide-react';
 
 const MainApp: React.FC = () => {
-  const { currentView, currentUser, logoutUser, navigateToHome, navigateToCategory, navigateToDistrict, navigateToAdmin, categories, districts } = useNews();
+  const { currentView, currentUser, logoutUser, navigateToHome, navigateToCategory, navigateToDistrict, navigateToAdmin, categories, districts, settings } = useNews();
   const [searchOpen, setSearchOpen] = useState(false);
   const [authOpen, setAuthOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  // Dynamically inject custom CSS
+  React.useEffect(() => {
+    if (settings?.customCss) {
+      const id = 'nijor-custom-css';
+      let styleTag = document.getElementById(id) as HTMLStyleElement;
+      if (!styleTag) {
+        styleTag = document.createElement('style');
+        styleTag.id = id;
+        document.head.appendChild(styleTag);
+      }
+      styleTag.innerHTML = settings.customCss;
+    } else {
+      document.getElementById('nijor-custom-css')?.remove();
+    }
+  }, [settings?.customCss]);
+
+  // Dynamically inject custom JS
+  React.useEffect(() => {
+    if (settings?.customJs) {
+      const id = 'nijor-custom-js';
+      let scriptTag = document.getElementById(id) as HTMLScriptElement;
+      if (scriptTag) {
+        scriptTag.remove(); // Remove old one to trigger execution again
+      }
+      scriptTag = document.createElement('script');
+      scriptTag.id = id;
+      scriptTag.type = 'text/javascript';
+      scriptTag.innerHTML = settings.customJs;
+      document.body.appendChild(scriptTag);
+    } else {
+      document.getElementById('nijor-custom-js')?.remove();
+    }
+  }, [settings?.customJs]);
+
   // If viewing admin dashboard
   if (currentView === 'admin') {
+    if (!currentUser) {
+      return (
+        <div 
+          className="min-h-screen bg-slate-950 flex flex-col justify-center items-center p-4" 
+          style={{ 
+            backgroundImage: 'linear-gradient(rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.95)), url("https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&q=80&w=1200")', 
+            backgroundSize: 'cover',
+            backgroundPosition: 'center'
+          }}
+        >
+          <AuthModal isOpen={true} onClose={navigateToHome} />
+        </div>
+      );
+    }
     return <AdminDashboard />;
   }
 
@@ -61,6 +109,21 @@ const MainApp: React.FC = () => {
         {currentView === 'page' && <StaticPageView />}
         {currentView === 'search' && <SearchPage />}
         {currentView === 'library' && <LibraryPage />}
+        {!['home', 'article', 'category', 'district', 'page', 'search', 'library'].includes(currentView) && (
+          <div className="max-w-4xl mx-auto px-4 py-24 text-center space-y-6">
+            <span className="text-8xl font-black text-slate-200 block font-serif tracking-widest">৪০৪</span>
+            <div className="space-y-2">
+              <h2 className="text-3xl font-serif font-black text-slate-900">দুঃখিত, পাতাটি খুঁজে পাওয়া যায়নি!</h2>
+              <p className="text-slate-500 text-sm max-w-md mx-auto">আপনি যে লিংকটি খুঁজছেন তা হয়তো ডিলিট করা হয়েছে অথবা লিংক পরিবর্তন করা হয়েছে। সঠিক স্পেলিং চেক করে আবার চেষ্টা করুন।</p>
+            </div>
+            <button 
+              onClick={navigateToHome}
+              className="bg-emerald-700 text-white font-bold px-6 py-2.5 rounded-lg hover:bg-emerald-800 transition shadow-md"
+            >
+              হোমপেজে ফিরে যান (Go to Homepage)
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Footer */}
@@ -138,14 +201,7 @@ const MainApp: React.FC = () => {
                 >
                   <LogOut className="w-4 h-4" /> লগআউট করুন
                 </button>
-              ) : (
-                <button 
-                  onClick={() => { setAuthOpen(true); setMobileMenuOpen(false); }}
-                  className="w-full bg-emerald-700 text-white py-2.5 rounded-lg text-xs font-bold flex items-center justify-center gap-2"
-                >
-                  <Shield className="w-4 h-4" /> স্টাফ লগইন
-                </button>
-              )}
+              ) : null}
             </div>
           </div>
         </div>

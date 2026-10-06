@@ -1,0 +1,166 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "Represents authorized staff members",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "role": { "type": "string", "enum": ["super_admin", "admin", "editor", "reporter"] },
+        "status": { "type": "string", "enum": ["active", "inactive"] },
+        "joinedAt": { "type": "string" }
+      },
+      "required": ["name", "email", "role", "status"]
+    },
+    "Article": {
+      "title": "Article",
+      "description": "Represents news articles",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "content": { "type": "string" },
+        "category": { "type": "string" },
+        "district": { "type": "string" },
+        "image": { "type": "string" },
+        "caption": { "type": "string" },
+        "views": { "type": "number" },
+        "authorId": { "type": "string" },
+        "authorName": { "type": "string" },
+        "publishedAt": { "type": "string" },
+        "status": { "type": "string", "enum": ["draft", "pending", "published"] }
+      },
+      "required": ["title", "content", "category", "authorId", "status"]
+    },
+    "BreakingNews": {
+      "title": "BreakingNews",
+      "description": "Represents breaking news tickers",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "text": { "type": "string" },
+        "createdAt": { "type": "string" },
+        "active": { "type": "boolean" }
+      },
+      "required": ["text", "active"]
+    },
+    "Category": {
+      "title": "Category",
+      "description": "Represents news categories",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "slug": { "type": "string" }
+      },
+      "required": ["name", "slug"]
+    },
+    "District": {
+      "title": "District",
+      "description": "Represents districts",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "slug": { "type": "string" }
+      },
+      "required": ["name", "slug"]
+    },
+    "Advertisement": {
+      "title": "Advertisement",
+      "description": "Represents display ads",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "imageUrl": { "type": "string" },
+        "targetUrl": { "type": "string" },
+        "position": { "type": "string" },
+        "clicks": { "type": "number" },
+        "active": { "type": "boolean" }
+      },
+      "required": ["title", "imageUrl", "position", "active"]
+    },
+    "Poll": {
+      "title": "Poll",
+      "description": "Represents public opinion polls",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "question": { "type": "string" },
+        "options": { "type": "array" },
+        "totalVotes": { "type": "number" },
+        "active": { "type": "boolean" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["question", "options", "active"]
+    },
+    "StaticPage": {
+      "title": "StaticPage",
+      "description": "Represents editorial policy, privacy, terms, and about pages",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "slug": { "type": "string" },
+        "content": { "type": "string" },
+        "lastUpdated": { "type": "string" }
+      },
+      "required": ["title", "slug", "content"]
+    },
+    "SecurityLog": {
+      "title": "SecurityLog",
+      "description": "Represents audit logs for staff logins and changes",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userEmail": { "type": "string" },
+        "action": { "type": "string" },
+        "ipAddress": { "type": "string" },
+        "timestamp": { "type": "string" },
+        "status": { "type": "string", "enum": ["deleted", "edit", "failed", "info", "logout", "success"] }
+      },
+      "required": ["userEmail", "action", "timestamp", "status"]
+    }
+  },
+  "firestore": {
+    "users/{userId}": {
+      "schema": "User",
+      "description": "Collection of authorized newsroom staff users"
+    },
+    "articles/{articleId}": {
+      "schema": "Article",
+      "description": "Collection of news stories"
+    },
+    "breaking/{breakingId}": {
+      "schema": "BreakingNews",
+      "description": "Collection of breaking news text tickets"
+    },
+    "categories/{categoryId}": {
+      "schema": "Category",
+      "description": "List of categories"
+    },
+    "districts/{districtId}": {
+      "schema": "District",
+      "description": "List of districts"
+    },
+    "advertisements/{adId}": {
+      "schema": "Advertisement",
+      "description": "List of active banner ads"
+    },
+    "polls/{pollId}": {
+      "schema": "Poll",
+      "description": "List of active reader polls"
+    },
+    "pages/{pageId}": {
+      "schema": "StaticPage",
+      "description": "List of editorial/privacy/about pages"
+    },
+    "security_logs/{logId}": {
+      "schema": "SecurityLog",
+      "description": "List of security activity audit logs"
+    }
+  }
+}

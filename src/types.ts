@@ -18,6 +18,7 @@ export interface User {
   bio?: string;
   assignedDistrict?: string;
   assignedCategory?: string;
+  assignedArea?: string;
   status: 'active' | 'blocked' | 'suspended';
   lastLogin?: string;
   activityHistory?: UserActivity[];
@@ -48,7 +49,7 @@ export interface Article {
   imageCaption?: string;
   imageSource?: string;
   tags: string[];
-  status: 'published' | 'draft' | 'scheduled' | 'pending_review' | 'trash';
+  status: 'published' | 'draft' | 'scheduled' | 'pending_review' | 'trash' | 'returned' | 'review';
   scheduledFor?: string;
   readTime: string;
   seoTitle?: string;
@@ -57,6 +58,7 @@ export interface Article {
   canonicalUrl?: string;
   ogImage?: string;
   relatedNews?: string[];
+  editorialNote?: string;
 }
 
 export interface BreakingNewsItem {
@@ -160,9 +162,20 @@ export interface RevisionItem {
   id: string;
   articleId: string;
   articleTitle: string;
-  editedBy: string;
-  editedAt: string;
-  changeSummary: string;
+  editedBy: string;      // Editor name
+  editorEmail: string;   // Editor Gmail
+  editorRole: string;    // Editor role
+  editedAt: string;      // Exact timestamp
+  changeSummary: string; // Summary of changes
+  title: string;         // Article Snapshot: Title
+  subheadline?: string;  // Article Snapshot: Subtitle
+  excerpt: string;       // Article Snapshot: Excerpt
+  content: string;       // Article Snapshot: Content
+  category: string;      // Article Snapshot: Category
+  district?: string;     // Article Snapshot: District
+  upazila?: string;      // Article Snapshot: Upazila
+  image: string;         // Article Snapshot: Featured Image
+  tags: string[];        // Article Snapshot: Tags
 }
 
 export interface NewsletterSubscriber {
@@ -199,8 +212,24 @@ export interface SiteSettings {
   instagram: string;
   telegram: string;
   whatsapp?: string;
+  aboutUs?: string;
   analyticsId: string;
   googleVerification: string;
+  metaKeywords?: string;
+  seoTitle?: string;
+  seoDescription?: string;
+  ogImageUrl?: string;
+  canonicalUrl?: string;
+  robotsTxt?: string;
+  customSitemap?: string;
+  customSchemaMarkup?: string;
+  customHtmlHeader?: string;
+  customHtmlFooter?: string;
+  customHtmlSidebar?: string;
+  customCss?: string;
+  customJs?: string;
+  customWidget?: string;
+  redirects?: { fromPath: string; toPath: string }[];
   defaultAuthor: string;
   defaultImage?: string;
   adsterraScript: string;
@@ -210,6 +239,7 @@ export interface SiteSettings {
   theme: 'light' | 'dark' | 'editorial';
   maintenanceMode: boolean;
   maintenanceMessage?: string;
+  adsEnabled?: boolean;
   homepageLayout: {
     showBreaking: boolean;
     showHero: boolean;
@@ -255,4 +285,11 @@ export interface StaticPage {
   seoTitle?: string;
   metaDescription?: string;
   status?: 'published' | 'draft';
+}
+
+export interface MagicToken {
+  email: string;
+  token: string;
+  expiresAt: number;
+  used: boolean;
 }

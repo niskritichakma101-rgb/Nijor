@@ -58,9 +58,6 @@ export const NewsCard: React.FC<NewsCardProps> = ({ article, variant = 'vertical
 
           <div className="flex items-center justify-between text-xs text-slate-305 pt-3 border-t border-slate-700/60">
             <span className="font-medium text-emerald-400">প্রতিবেদক: {article.reporterName}</span>
-            <span className="flex items-center gap-1 text-slate-300">
-              <Eye className="w-3.5 h-3.5" /> {article.views} বার পঠিত
-            </span>
           </div>
         </div>
       </div>
@@ -100,9 +97,6 @@ export const NewsCard: React.FC<NewsCardProps> = ({ article, variant = 'vertical
           </p>
           <div className="flex items-center text-xs text-slate-500">
             <span>{article.reporterName}</span>
-            <span className="ml-auto flex items-center gap-1">
-              <Eye className="w-3 h-3" /> {article.views}
-            </span>
           </div>
         </div>
       </div>
@@ -161,9 +155,6 @@ export const NewsCard: React.FC<NewsCardProps> = ({ article, variant = 'vertical
         </p>
         <div className="flex items-center justify-between text-xs text-slate-400 pt-3 border-t border-slate-100 mt-auto">
           <span>{article.publishedAt}</span>
-          <span className="flex items-center gap-1 text-slate-500">
-            <Eye className="w-3 h-3" /> {article.views}
-          </span>
         </div>
       </div>
     </div>

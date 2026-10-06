@@ -163,7 +163,25 @@ export const initialComments: CommentItem[] = [
 ];
 
 export const initialRevisions: RevisionItem[] = [
-  { id: 'rev-1', articleId: 'art-1', articleTitle: 'কাপ্তাই হ্রদের অপরূপ সৌন্দর্যে মুগ্ধ...', editedBy: 'নিখিলেশ চাকমা', editedAt: '২০২৬-০৯-২৯ টি ১১:০০', changeSummary: 'শিরোনাম ও উপশিরোনাম সংশোধন করা হয়েছে।' }
+  { 
+    id: 'rev-1', 
+    articleId: 'art-1', 
+    articleTitle: 'কাপ্তাই হ্রদের অপরূপ সৌন্দর্যে মুগ্ধ দেশি-বিদেশি পর্যটকরা, বাড়ছে স্থানীয় অর্থনীতি', 
+    editedBy: 'নিখিলেশ চাকমা', 
+    editorEmail: 'admin@nijornews.com',
+    editorRole: 'super_admin',
+    editedAt: '২০২৬-০৯-২৯T১১:০০:০০+০৬:০০', 
+    changeSummary: 'শিরোনাম ও উপশিরোনাম সংশোধন করা হয়েছে।',
+    title: 'কাপ্তাই হ্রদের অপরূপ সৌন্দর্যে মুগ্ধ দেশি-বিদেশি পর্যটকরা, বাড়ছে স্থানীয় অর্থনীতি',
+    subheadline: 'শীতের আমেজে রাঙামাটির ঝুলন্ত সেতু ও সুবলং ঝরনায় পর্যটকদের উপচে পড়া ভিড়, চাঙ্গা হয়ে উঠেছে স্থানীয় হোটেল ও বোট ব্যবসা।',
+    excerpt: 'রাঙামাটির প্রধান আকর্ষণ কাপ্তাই হ্রদে শীতের শুরুতেই পর্যটকদের ঢল নেমেছে। ঝুলন্ত সেতু, পলওয়েল পার্ক ও সুবলং ঝরনায় প্রতিদিন হাজারো পর্যটক ভিড় করছেন...',
+    content: 'রাঙামাটির প্রধান আকর্ষণ কাপ্তাই হ্রদে শীতের শুরুতেই পর্যটকদের ঢল নেমেছে। ঝুলন্ত সেতু, পলওয়েল পার্ক ও সুবলং ঝরনায় প্রতিদিন হাজারো পর্যটক ভিড় করছেন। পাহাড়ি কনকনে ঠান্ডায় হ্রদের নীল জলরাশি আর চারপাশের সবুজ পাহাড়ের মিতালি দেশি-বিদেশি ভ্রমণপিপাসুদের দারুণভাবে আকর্ষণ করছে।\n\nস্থানীয় বোট চালক ও ব্যবসায়ীরা জানান, গত বছরের তুলনায় এ বছর পর্যটকদের আগমন অনেক বেশি। এতে হোটেল-মোটেল, রেস্টুরেন্ট এবং হস্তশিল্পের ব্যবসা জমজমাট হয়ে উঠেছে। জেলা প্রশাসন ও পুলিশ প্রশাসনের পক্ষ থেকে পর্যটকদের নিরাপত্তা ও সুবিধার্থে বিশেষ নজরদারি রাখা হয়েছে।',
+    category: 'পার্বত্য চট্টগ্রাম',
+    district: 'রাঙামাটি',
+    upazila: 'সদর',
+    image: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&q=80&w=1200',
+    tags: ['রাঙামাটি', 'কাপ্তাই হ্রদ', 'পর্যটন', 'পার্বত্য চট্টগ্রাম']
+  }
 ];
 
 export const initialSubscribers: NewsletterSubscriber[] = [
@@ -262,6 +280,27 @@ export const initialSettings: SiteSettings = {
   whatsapp: '+৮৮ ০১৭১১-০০০০০০',
   analyticsId: 'G-XXXXXXXXXX',
   googleVerification: 'google-site-verification=xxxxxx',
+  metaKeywords: 'Nijor News, পার্বত্য চট্টগ্রাম, রাঙামাটি খবর, খাগড়াছড়ি সংবাদ, বান্দরবান খবর, পাহাড়ের খবর, পাহাড় সমতল দর্পণ, Chittagong Hill Tracts',
+  ogImageUrl: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&q=80&w=1200',
+  canonicalUrl: 'https://nijornews.com',
+  robotsTxt: "User-agent: *\nAllow: /\n\nSitemap: https://nijornews.com/sitemap.xml",
+  customSitemap: "",
+  customSchemaMarkup: `{
+  "@context": "https://schema.org",
+  "@type": "NewsMediaOrganization",
+  "name": "Nijor News",
+  "url": "https://nijornews.com",
+  "logo": "https://nijornews.com/logo.png",
+  "sameAs": [
+    "https://facebook.com/nijornews",
+    "https://youtube.com/@nijornews"
+  ],
+  "publishingPrinciples": "https://nijornews.com/editorial-policy"
+}`,
+  redirects: [
+    { fromPath: '/old-about', toPath: '/about-us' },
+    { fromPath: '/contact', toPath: '/contact-us' }
+  ],
   defaultAuthor: 'নিজোর নিউজ ডেস্ক',
   defaultImage: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&q=80&w=1200',
   adsterraScript: '',

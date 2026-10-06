@@ -3,7 +3,7 @@ import { useNews } from '../context/NewsContext';
 import { BarChart2, CheckCircle2 } from 'lucide-react';
 
 export const PollWidget: React.FC = () => {
-  const { polls, votePoll } = useNews();
+  const { polls, votePoll, currentUser } = useNews();
   const poll = polls[0]; // Active poll
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [voted, setVoted] = useState(false);
@@ -18,9 +18,22 @@ export const PollWidget: React.FC = () => {
 
   return (
     <div className="bg-white rounded-xl border border-slate-200 p-5 shadow-xs space-y-4">
-      <div className="flex items-center gap-2 pb-2 border-b border-slate-200">
-        <BarChart2 className="w-5 h-5 text-emerald-700" />
-        <h3 className="font-serif font-bold text-base text-slate-900">অনলাইন পোল (পাঠক মতামত)</h3>
+      <div className="flex items-center justify-between pb-2 border-b border-slate-200">
+        <div className="flex items-center gap-2">
+          <BarChart2 className="w-5 h-5 text-emerald-700" />
+          <h3 className="font-serif font-bold text-base text-slate-900">অনলাইন পোল (পাঠক মতামত)</h3>
+        </div>
+        {currentUser && (
+          <button
+            onClick={() => {
+              window.location.hash = `#/admin-edit-poll-${poll.id}`;
+            }}
+            className="text-[10px] font-bold text-rose-600 hover:text-rose-700 hover:underline flex items-center gap-0.5"
+            title="জনমত জরিপটি এডিট করুন"
+          >
+            এডিট করুন
+          </button>
+        )}
       </div>
 
       <p className="font-serif font-bold text-sm text-slate-800 leading-snug">

@@ -24,6 +24,9 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSearch, onOpenAuth, onOpen
 
   return (
     <header className="bg-white border-b border-slate-200 shadow-xs">
+      {settings.customHtmlHeader && (
+        <div dangerouslySetInnerHTML={{ __html: settings.customHtmlHeader }} />
+      )}
       {/* Top Bar */}
       <div className="bg-slate-900 text-slate-300 text-xs py-2 px-4">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2">
@@ -82,20 +85,33 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSearch, onOpenAuth, onOpen
       {/* Main Branding & Header Banner Area */}
       <div className="max-w-7xl mx-auto px-4 py-5 flex flex-col md:flex-row justify-between items-center gap-6">
         {/* Logo */}
-        <div className="text-center md:text-left cursor-pointer" onClick={navigateToHome}>
-          <div className="flex items-center justify-center md:justify-start gap-3">
-            <div className="bg-emerald-700 text-white font-serif font-black text-3xl px-3.5 py-1.5 rounded-lg shadow-md tracking-wider">
-              নিজোর
-            </div>
+        <div className="text-center md:text-left cursor-pointer animate-in fade-in" onClick={navigateToHome}>
+          <div className="flex items-center justify-center md:justify-start gap-4">
+            
+            {/* Left Block: Image Logo (if uploaded) or Styled Text Box "নিজোর" */}
+            {settings.logoUrl ? (
+              <img 
+                src={settings.logoUrl} 
+                alt={settings.siteName || "নিজোর নিউজ"} 
+                className="max-h-16 max-w-[180px] object-contain rounded-lg shadow-xs hover:opacity-95 transition shrink-0"
+              />
+            ) : (
+              <div className="bg-emerald-700 text-white font-serif font-black text-3xl px-3.5 py-1.5 rounded-lg shadow-md tracking-wider shrink-0">
+                নিজোর
+              </div>
+            )}
+
+            {/* Right Block: Always shows the Site Name and Tagline */}
             <div>
-              <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-slate-900 font-serif">
-                নিজর নিউজ
-                <span className="text-emerald-600 font-sans text-xl sm:text-2xl ml-2 font-bold">| NIJOR NEWS</span>
+              <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 font-serif flex items-center flex-wrap gap-1.5">
+                <span>নিজোর নিউজ</span>
+                <span className="text-emerald-600 font-sans text-lg sm:text-xl font-bold">| NIJOR NEWS</span>
               </h1>
-              <p className="text-xs sm:text-sm text-slate-600 font-medium mt-0.5 tracking-wide">
-                পার্বত্য চট্টগ্রাম ও বাংলাদেশের প্রবাসীর বিশ্বস্ত সংবাদ মাধ্যম
+              <p className="text-[11px] sm:text-xs text-slate-600 font-bold mt-0.5 tracking-wide leading-relaxed max-w-md">
+                {settings.siteSubtitle || 'পার্বত্য চট্টগ্রাম ও বাংলাদেশের প্রবাসীর বিশ্বস্ত সংবাদ মাধ্যম'}
               </p>
             </div>
+
           </div>
         </div>
 

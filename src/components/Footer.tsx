@@ -20,9 +20,17 @@ export const Footer: React.FC = () => {
           {/* Col 1: About */}
           <div className="space-y-4">
             <div className="flex items-center gap-3 cursor-pointer" onClick={navigateToHome}>
-              <div className="bg-emerald-600 text-white font-serif font-bold text-2xl px-3 py-1 rounded">
-                নিজোর
-              </div>
+              {settings.logoUrl ? (
+                <img 
+                  src={settings.logoUrl} 
+                  alt={settings.siteName || "NIJOR NEWS"} 
+                  className="h-10 w-auto object-contain rounded-md animate-in fade-in" 
+                />
+              ) : (
+                <div className="bg-emerald-600 text-white font-serif font-bold text-2xl px-3 py-1 rounded">
+                  নিজোর
+                </div>
+              )}
               <span className="text-xl font-bold font-serif text-white">
                 নিজোর নিউজ <span className="text-emerald-400 font-sans text-xs">| NIJOR NEWS</span>
               </span>
@@ -107,10 +115,11 @@ export const Footer: React.FC = () => {
         {/* Bottom copyright */}
         <div className="pt-6 flex flex-col sm:flex-row justify-between items-center text-xs text-slate-500 gap-4">
           <p>{settings.footerText}</p>
-          <p className="flex items-center gap-1">
-            Developed with <span className="text-red-500">❤️</span> for Chittagong Hill Tracts & Bangladesh
-          </p>
         </div>
+
+        {settings.customHtmlFooter && (
+          <div className="mt-4 border-t border-slate-800 pt-4" dangerouslySetInnerHTML={{ __html: settings.customHtmlFooter }} />
+        )}
 
       </div>
     </footer>

@@ -1,0 +1,55 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // 1. Articles (News stories)
+    match /articles/{articleId} {
+      allow read, write: if true;
+    }
+
+    // 2. Breaking News
+    match /breaking/{breakingId} {
+      allow read, write: if true;
+    }
+
+    // 3. Categories
+    match /categories/{categoryId} {
+      allow read, write: if true;
+    }
+
+    // 4. Districts
+    match /districts/{districtId} {
+      allow read, write: if true;
+    }
+
+    // 5. Advertisements
+    match /advertisements/{adId} {
+      allow read, write: if true;
+    }
+
+    // 6. Polls
+    match /polls/{pollId} {
+      allow read, write: if true;
+    }
+
+    // 7. Static Pages
+    match /pages/{pageId} {
+      allow read, write: if true;
+    }
+
+    // 8. Security Logs
+    match /security_logs/{logId} {
+      allow read, write: if true;
+    }
+
+    // 9. Users / Staff Profiles
+    match /users/{userId} {
+      allow read, write: if true;
+    }
+
+    // 10. Global Fallback
+    match /{document=**} {
+      allow read, write: if true;
+    }
+  }
+}

@@ -6,7 +6,7 @@ import { PollWidget } from '../components/PollWidget';
 import { Flame, TrendingUp, MapPin, Sparkles, ChevronRight, Award } from 'lucide-react';
 
 export const HomePage: React.FC = () => {
-  const { articles, districts, navigateToCategory, navigateToDistrict, navigateToArticle } = useNews();
+  const { articles, districts, navigateToCategory, navigateToDistrict, navigateToArticle, settings } = useNews();
 
   // Filter articles by section
   const leadArticle = articles.find(a => a.isLead) || articles[0];
@@ -69,6 +69,14 @@ export const HomePage: React.FC = () => {
               <div className="mt-6 pt-4 border-t border-slate-100">
                 <AdSlot position="sidebar" />
               </div>
+
+              {settings.customHtmlSidebar && (
+                <div className="mt-6 pt-4 border-t border-slate-100" dangerouslySetInnerHTML={{ __html: settings.customHtmlSidebar }} />
+              )}
+
+              {settings.customWidget && (
+                <div className="mt-6 pt-4 border-t border-slate-100" dangerouslySetInnerHTML={{ __html: settings.customWidget }} />
+              )}
             </div>
 
             {/* Poll Widget */}

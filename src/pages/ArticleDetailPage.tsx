@@ -3,10 +3,11 @@ import { useNews } from '../context/NewsContext';
 import { NewsCard } from '../components/NewsCard';
 import { SocialShare } from '../components/SocialShare';
 import { AdSlot } from '../components/AdSlot';
-import { Eye, Clock, MapPin, User, Tag, ArrowLeft, MessageSquare, Send } from 'lucide-react';
+import { Breadcrumb } from '../components/Breadcrumb';
+import { Eye, Clock, MapPin, User, Tag, ArrowLeft, MessageSquare, Send, Edit } from 'lucide-react';
 
 export const ArticleDetailPage: React.FC = () => {
-  const { articles, selectedArticleId, navigateToHome, navigateToCategory, navigateToDistrict } = useNews();
+  const { articles, selectedArticleId, navigateToHome, navigateToCategory, navigateToDistrict, currentUser } = useNews();
   
   const article = articles.find(a => a.id === selectedArticleId) || articles[0];
 
@@ -49,29 +50,46 @@ export const ArticleDetailPage: React.FC = () => {
   const relatedArticles = articles.filter(a => a.category === article.category && a.id !== article.id).slice(0, 3);
   const latestArticles = articles.slice(0, 5);
 
-  return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
-      
-      {/* Breadcrumb & Back */}
-      <div className="flex items-center gap-2 text-xs text-slate-500 mb-6">
-        <button onClick={navigateToHome} className="hover:text-emerald-700 flex items-center gap-1">
-          <ArrowLeft className="w-3.5 h-3.5" /> হোম
-        </button>
-        <span>/</span>
-        <button onClick={() => navigateToCategory(article.category)} className="hover:text-emerald-700 font-semibold text-emerald-700">
-          {article.category}
-        </button>
-        {article.district && (
-          <>
-            <span>/</span>
-            <button onClick={() => navigateToDistrict(article.district || '')} className="hover:text-amber-700 font-semibold text-amber-700">
-              {article.district}
-            </button>
-          </>
-        )}
-      </div>
+  // News SEO Structured Data (NewsArticle Schema)
+  const newsArticleSchema = {
+    "@context": "https://schema.org",
+    "@type": "NewsArticle",
+    "headline": article.title,
+    "description": article.excerpt,
+    "image": [article.image],
+    "datePublished": article.publishedAt || "2026-09-30T12:00:00+06:00",
+    "dateModified": article.updatedAt || article.publishedAt || "2026-09-30T14:30:00+06:00",
+    "author": {
+      "@type": "Person",
+      "name": article.reporterName || "নিজোর নিউজ ডেস্ক"
+    },
+    "publisher": {
+      "@type": "NewsMediaOrganization",
+      "name": "Nijor News",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://nijornews.com/logo.png"
+      }
+    }
+  };
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+  const breadcrumbItems = [
+    { label: article.category, onClick: () => navigateToCategory(article.category) },
+    ...(article.district ? [{ label: article.district, onClick: () => navigateToDistrict(article.district || '') }] : []),
+    { label: article.title }
+  ];
+
+  return (
+    <div className="max-w-7xl mx-auto px-4 py-4">
+      {/* Dynamic NewsArticle Schema Markup Injection */}
+      <script type="application/ld+json">
+        {JSON.stringify(newsArticleSchema)}
+      </script>
+
+      {/* Breadcrumb Navigation (News & Structural SEO) */}
+      <Breadcrumb items={breadcrumbItems} />
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-4">
         
         {/* Main Article Content (2 Cols) */}
         <main className="lg:col-span-2 bg-white rounded-xl border border-slate-200 p-6 md:p-8 shadow-xs">
@@ -91,6 +109,17 @@ export const ArticleDetailPage: React.FC = () => {
               >
                 <MapPin className="w-3 h-3" /> {article.district}
               </span>
+            )}
+            {currentUser && (
+              <button 
+                onClick={() => {
+                  window.location.hash = `#/admin-edit-art-${article.id}`;
+                }}
+                className="bg-rose-600 hover:bg-rose-700 text-white text-[11px] font-bold px-2.5 py-1 rounded-md flex items-center gap-1 shadow-xs transition duration-200"
+                title="ভুল সংশোধন বা এডিট করুন"
+              >
+                <Edit className="w-3.5 h-3.5" /> এডিট করুন
+              </button>
             )}
             <span className="text-slate-400 text-xs ml-auto flex items-center gap-1">
               <Clock className="w-3.5 h-3.5" /> প্রকাশিত: {article.publishedAt}
@@ -124,7 +153,6 @@ export const ArticleDetailPage: React.FC = () => {
             </div>
 
             <div className="flex items-center gap-4 text-xs text-slate-500">
-              <span className="flex items-center gap-1"><Eye className="w-4 h-4 text-emerald-600" /> {article.views} বার পঠিত</span>
               <span className="flex items-center gap-1"><Clock className="w-4 h-4 text-slate-400" /> {article.readTime}</span>
             </div>
           </div>
@@ -150,7 +178,7 @@ export const ArticleDetailPage: React.FC = () => {
           />
 
           {/* Social Share Bar */}
-          <SocialShare title={article.title} />
+          <SocialShare title={article.title} url={`${window.location.origin}/n/${article.id}`} />
 
           {/* Tags */}
           <div className="flex flex-wrap items-center gap-2 pt-4">
