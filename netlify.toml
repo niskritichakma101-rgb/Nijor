@@ -1,7 +1,36 @@
 [build]
   command = "npm run build"
   publish = "dist"
+  functions = "netlify/functions"
+  edge_functions = "netlify/edge-functions"
 
+# Netlify Edge Functions for ultra-fast Social Media Preview
+[[edge_functions]]
+  path = "/n/*"
+  function = "og"
+
+[[edge_functions]]
+  path = "/article/*"
+  function = "og"
+
+# Dynamic OG generator fallback for Facebook, Messenger, WhatsApp, Twitter
+[[redirects]]
+  from = "/n/:id"
+  to = "/.netlify/functions/og?id=:id"
+  status = 200
+
+[[redirects]]
+  from = "/article/:id"
+  to = "/.netlify/functions/og?id=:id"
+  status = 200
+
+# Direct access to Admin Panel at https://nijornews.netlify.app/admin
+[[redirects]]
+  from = "/admin"
+  to = "/index.html"
+  status = 200
+
+# SPA fallback for all other routes
 [[redirects]]
   from = "/*"
   to = "/index.html"

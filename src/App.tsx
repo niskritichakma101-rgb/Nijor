@@ -20,6 +20,7 @@ import { StaticPageView } from './pages/StaticPageView';
 import { SearchPage } from './pages/SearchPage';
 import { LibraryPage } from './pages/LibraryPage';
 import { AdminDashboard } from './pages/AdminDashboard';
+import { AdminLoginView } from './components/AdminLoginView';
 import { X, Home, MapPin, Shield, LogOut } from 'lucide-react';
 
 const MainApp: React.FC = () => {
@@ -62,21 +63,10 @@ const MainApp: React.FC = () => {
     }
   }, [settings?.customJs]);
 
-  // If viewing admin dashboard
+  // If viewing admin dashboard or direct /admin link
   if (currentView === 'admin') {
     if (!currentUser) {
-      return (
-        <div 
-          className="min-h-screen bg-slate-950 flex flex-col justify-center items-center p-4" 
-          style={{ 
-            backgroundImage: 'linear-gradient(rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.95)), url("https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&q=80&w=1200")', 
-            backgroundSize: 'cover',
-            backgroundPosition: 'center'
-          }}
-        >
-          <AuthModal isOpen={true} onClose={navigateToHome} />
-        </div>
-      );
+      return <AdminLoginView />;
     }
     return <AdminDashboard />;
   }

@@ -137,7 +137,16 @@ export const NewsProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [currentView, setCurrentView] = useState<string>(() => {
     const hash = window.location.hash;
     const path = window.location.pathname;
-    return hash === '#/admin' || hash === '#admin' || path === '/admin' || path.startsWith('/admin') ? 'admin' : 'home';
+    if (hash === '#/admin' || hash === '#admin' || path === '/admin' || path.startsWith('/admin')) {
+      return 'admin';
+    }
+    if (hash.startsWith('#/article/')) {
+      return 'article';
+    }
+    if (path.startsWith('/n/') || path.startsWith('/article/') || path.startsWith('/news/')) {
+      return 'article';
+    }
+    return 'home';
   });
 
   // Dynamic syncing and seeding logic for Firestore database
@@ -242,15 +251,35 @@ export const NewsProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (hash.startsWith('#/admin') || hash === '#admin' || path === '/admin' || path.startsWith('/admin')) {
         setCurrentView('admin');
       } else if (hash.startsWith('#/article/')) {
-        const id = hash.replace('#/article/', '');
+        const id = hash.replace('#/article/', '').split('?')[0];
+        setSelectedArticleId(id);
+        setCurrentView('article');
+      } else if (path.startsWith('/n/')) {
+        const id = path.replace('/n/', '').split('/')[0].split('?')[0];
+        setSelectedArticleId(id);
+        setCurrentView('article');
+      } else if (path.startsWith('/article/')) {
+        const id = path.replace('/article/', '').split('/')[0].split('?')[0];
+        setSelectedArticleId(id);
+        setCurrentView('article');
+      } else if (path.startsWith('/news/')) {
+        const id = path.replace('/news/', '').split('/')[0].split('?')[0];
         setSelectedArticleId(id);
         setCurrentView('article');
       } else if (hash.startsWith('#/category/')) {
         const slug = decodeURIComponent(hash.replace('#/category/', ''));
         setSelectedCategorySlug(slug);
         setCurrentView('category');
+      } else if (path.startsWith('/category/')) {
+        const slug = decodeURIComponent(path.replace('/category/', ''));
+        setSelectedCategorySlug(slug);
+        setCurrentView('category');
       } else if (hash.startsWith('#/district/')) {
         const slug = decodeURIComponent(hash.replace('#/district/', ''));
+        setSelectedDistrictSlug(slug);
+        setCurrentView('district');
+      } else if (path.startsWith('/district/')) {
+        const slug = decodeURIComponent(path.replace('/district/', ''));
         setSelectedDistrictSlug(slug);
         setCurrentView('district');
       } else if (hash.startsWith('#/page/')) {
@@ -398,7 +427,23 @@ export const NewsProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, [users]);
 
   const [staticPages, setStaticPages] = useState<StaticPage[]>(initialStaticPages);
-  const [selectedArticleId, setSelectedArticleId] = useState<string | null>(null);
+  const [selectedArticleId, setSelectedArticleId] = useState<string | null>(() => {
+    const hash = window.location.hash;
+    const path = window.location.pathname;
+    if (hash.startsWith('#/article/')) {
+      return hash.replace('#/article/', '').split('?')[0];
+    }
+    if (path.startsWith('/n/')) {
+      return path.replace('/n/', '').split('/')[0].split('?')[0];
+    }
+    if (path.startsWith('/article/')) {
+      return path.replace('/article/', '').split('/')[0].split('?')[0];
+    }
+    if (path.startsWith('/news/')) {
+      return path.replace('/news/', '').split('/')[0].split('?')[0];
+    }
+    return null;
+  });
   const [selectedCategorySlug, setSelectedCategorySlug] = useState<string | null>(null);
   const [selectedDistrictSlug, setSelectedDistrictSlug] = useState<string | null>(null);
   const [selectedPageSlug, setSelectedPageSlug] = useState<string | null>(null);
@@ -423,7 +468,11 @@ export const NewsProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Navigation handlers
   const navigateToHome = () => {
-    window.location.hash = '';
+    try {
+      window.history.pushState({}, '', '/');
+    } catch (e) {
+      window.location.hash = '';
+    }
     setCurrentView('home');
     setSelectedArticleId(null);
     setSelectedCategorySlug(null);
@@ -433,7 +482,11 @@ export const NewsProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const navigateToArticle = (id: string) => {
-    window.location.hash = `#/article/${id}`;
+    try {
+      window.history.pushState({ articleId: id }, '', `/n/${id}`);
+    } catch (e) {
+      window.location.hash = `#/article/${id}`;
+    }
     setSelectedArticleId(id);
     setCurrentView('article');
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -454,7 +507,11 @@ export const NewsProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const navigateToAdmin = () => {
-    window.location.hash = '/admin';
+    try {
+      window.history.pushState({}, '', '/admin');
+    } catch (e) {
+      window.location.hash = '/admin';
+    }
     setCurrentView('admin');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };

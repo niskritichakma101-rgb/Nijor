@@ -342,23 +342,31 @@ Current Settings: ${JSON.stringify(currentSettings)}`;
         html = html.replace(/<meta\s+property="og:[^"]*"\s+content="[^"]*"\s*\/?>/gi, '');
         html = html.replace(/<meta\s+name="twitter:[^"]*"\s+content="[^"]*"\s*\/?>/gi, '');
 
-        // Resolve absolute absolute image proxy URL
-        const host = req.get('host') || 'nijor-news.ai.studio';
+        // Resolve absolute image URL: prefer direct article image if available
+        const host = req.get('host') || 'nijornews.netlify.app';
         const protocol = req.secure || req.headers['x-forwarded-proto'] === 'https' ? 'https' : 'http';
-        const absoluteImageUrl = `${protocol}://${host}/api/image/${id}`;
+        const absoluteImageUrl = (article.image && article.image.startsWith('http')) 
+          ? article.image 
+          : `${protocol}://${host}/api/image/${id}`;
+
+        const canonicalUrl = `https://nijornews.netlify.app/n/${id}`;
 
         const ogMetaTags = `
           <title>${article.title} - NIJOR NEWS</title>
           <meta name="description" content="${article.excerpt}" />
+          <meta property="og:site_name" content="নিজোর নিউজ | NIJOR NEWS" />
           <meta property="og:title" content="${article.title}" />
           <meta property="og:description" content="${article.excerpt}" />
           <meta property="og:image" content="${absoluteImageUrl}" />
+          <meta property="og:image:secure_url" content="${absoluteImageUrl}" />
           <meta property="og:image:width" content="1200" />
           <meta property="og:image:height" content="630" />
           <meta property="og:image:type" content="image/jpeg" />
-          <meta property="og:url" content="${protocol}://${host}${req.originalUrl}" />
+          <meta property="og:url" content="${canonicalUrl}" />
           <meta property="og:type" content="article" />
+          <meta property="fb:app_id" content="291494419107518" />
           <meta name="twitter:card" content="summary_large_image" />
+          <meta name="twitter:site" content="@nijornews" />
           <meta name="twitter:title" content="${article.title}" />
           <meta name="twitter:description" content="${article.excerpt}" />
           <meta name="twitter:image" content="${absoluteImageUrl}" />

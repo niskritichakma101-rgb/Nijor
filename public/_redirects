@@ -1,0 +1,10 @@
+# Netlify Redirects for Nijor News (https://nijornews.netlify.app)
+# Dynamic Open Graph & Social Media Preview for News Links
+/n/:id       /.netlify/functions/og?id=:id   200!
+/article/:id /.netlify/functions/og?id=:id   200!
+
+# Admin Panel Direct Access Route
+/admin       /index.html                     200
+
+# Single Page Application (SPA) Fallback
+/*           /index.html                     200

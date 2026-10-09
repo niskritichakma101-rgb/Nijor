@@ -11,30 +11,41 @@ export const ArticleDetailPage: React.FC = () => {
   
   const article = articles.find(a => a.id === selectedArticleId) || articles[0];
 
-  // Dynamic Open Graph metadata update for Facebook sharing
+  // Dynamic Open Graph metadata update for Facebook sharing & clean URL syncing
   useEffect(() => {
     if (article) {
       document.title = `${article.title} - NIJOR NEWS`;
+
+      // Update clean address bar URL for sharing
+      try {
+        if (window.location.pathname !== `/n/${article.id}`) {
+          window.history.replaceState({ articleId: article.id }, '', `/n/${article.id}`);
+        }
+      } catch (e) {}
       
       // Update meta tags
-      const metaDesc = document.querySelector('meta[name="description"]');
-      if (metaDesc) metaDesc.setAttribute('content', article.excerpt);
+      const setMeta = (name: string, content: string, isProp = false) => {
+        const attr = isProp ? 'property' : 'name';
+        let el = document.querySelector(`meta[${attr}="${name}"]`);
+        if (!el) {
+          el = document.createElement('meta');
+          el.setAttribute(attr, name);
+          document.head.appendChild(el);
+        }
+        el.setAttribute('content', content);
+      };
 
-      const ogTitle = document.querySelector('meta[property="og:title"]');
-      if (ogTitle) ogTitle.setAttribute('content', article.title);
-
-      const ogDesc = document.querySelector('meta[property="og:description"]');
-      if (ogDesc) ogDesc.setAttribute('content', article.excerpt);
-
-      const ogImage = document.querySelector('meta[property="og:image"]');
-      if (ogImage) {
-        ogImage.setAttribute('content', article.image);
-      } else {
-        const newOgImage = document.createElement('meta');
-        newOgImage.setAttribute('property', 'og:image');
-        newOgImage.setAttribute('content', article.image);
-        document.head.appendChild(newOgImage);
-      }
+      setMeta('description', article.excerpt);
+      setMeta('og:title', article.title, true);
+      setMeta('og:description', article.excerpt, true);
+      setMeta('og:image', article.image, true);
+      setMeta('og:image:secure_url', article.image, true);
+      setMeta('og:url', `https://nijornews.netlify.app/n/${article.id}`, true);
+      setMeta('og:type', 'article', true);
+      setMeta('twitter:card', 'summary_large_image');
+      setMeta('twitter:title', article.title);
+      setMeta('twitter:description', article.excerpt);
+      setMeta('twitter:image', article.image);
     }
   }, [article]);
 
