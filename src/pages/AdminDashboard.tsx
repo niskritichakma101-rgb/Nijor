@@ -97,23 +97,47 @@ export const AdminDashboard: React.FC = () => {
   // Role-Based Access Control Tab Whitelists
   const isTabAllowed = (tabName: string) => {
     const role = currentUser?.role || 'reporter';
-    if (role === 'super_admin') return true; // Full access
+    if (role === 'super_admin') return true; // Full access to all 25 tabs
     
     const permissions: Record<string, string[]> = {
       admin: [
         'home', 'news', 'breaking', 'categories', 'districts', 'editorial', 
-        'scheduled', 'ads', 'media', 'analytics', 'comments', 'pages', 'newsletter', 'notifications'
+        'scheduled', 'ads', 'media', 'analytics', 'homepage', 'comments', 
+        'pages', 'newsletter', 'notifications', 'reporters', 'polls', 'revisions'
       ],
       editor: [
-        'home', 'news', 'breaking', 'editorial', 'scheduled', 'media', 'comments', 'notifications'
+        'home', 'news', 'breaking', 'editorial', 'scheduled', 'media', 
+        'comments', 'notifications', 'polls', 'revisions'
       ],
       reporter: [
+        'home', 'news', 'media'
+      ],
+      senior_reporter: [
         'home', 'news', 'media'
       ]
     };
     
-    const allowedTabs = permissions[role] || ['home', 'news'];
+    const allowedTabs = permissions[role] || ['home', 'news', 'media'];
     return allowedTabs.includes(tabName);
+  };
+
+  const canEditArticle = (art: typeof articles[0]) => {
+    if (!currentUser) return false;
+    if (currentUser.role === 'super_admin' || currentUser.role === 'admin' || currentUser.role === 'editor') return true;
+    if (currentUser.role === 'reporter' || currentUser.role === 'senior_reporter') {
+      return art.reporterName === currentUser.name || !art.reporterName || art.reporterName.includes(currentUser.name);
+    }
+    return false;
+  };
+
+  const canDeleteArticle = (art: typeof articles[0]) => {
+    if (!currentUser) return false;
+    if (currentUser.role === 'super_admin' || currentUser.role === 'admin') return true;
+    if (currentUser.role === 'editor') return true;
+    if (currentUser.role === 'reporter' || currentUser.role === 'senior_reporter') {
+      return art.status === 'draft' && (art.reporterName === currentUser.name || art.reporterName.includes(currentUser.name));
+    }
+    return false;
   };
 
   // Prevent direct state tampering
@@ -805,12 +829,30 @@ export const AdminDashboard: React.FC = () => {
         </div>
 
         <div className="p-4 border-b border-slate-800 flex items-center gap-3 bg-slate-950/50">
-          <div className="w-9 h-9 rounded-full bg-emerald-700 text-white font-bold flex items-center justify-center shrink-0">
-            {currentUser?.name?.[0] || 'A'}
+          <div className={`w-9 h-9 rounded-full text-white font-bold flex items-center justify-center shrink-0 ${
+            currentUser?.role === 'super_admin' ? 'bg-amber-600 ring-2 ring-amber-400/40 text-amber-100' :
+            currentUser?.role === 'admin' ? 'bg-blue-600 ring-2 ring-blue-400/40 text-blue-100' :
+            currentUser?.role === 'editor' ? 'bg-emerald-600 ring-2 ring-emerald-400/40 text-emerald-100' :
+            'bg-purple-600 ring-2 ring-purple-400/40 text-purple-100'
+          }`}>
+            {currentUser?.role === 'super_admin' ? '👑' :
+             currentUser?.role === 'admin' ? '🛡️' :
+             currentUser?.role === 'editor' ? '✍️' : '🎤'}
           </div>
           <div className="overflow-hidden">
-            <p className="font-bold text-sm text-white truncate">{currentUser?.name || 'অ্যাডমিন'}</p>
-            <p className="text-xs text-emerald-400 uppercase tracking-wider">{currentUser?.role || 'Super Admin'}</p>
+            <p className="font-bold text-sm text-white truncate">{currentUser?.name || 'স্টাফ মেম্বার'}</p>
+            <p className="text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 mt-0.5">
+              <span className={
+                currentUser?.role === 'super_admin' ? 'text-amber-300' :
+                currentUser?.role === 'admin' ? 'text-blue-300' :
+                currentUser?.role === 'editor' ? 'text-emerald-300' :
+                'text-purple-300'
+              }>
+                {currentUser?.role === 'super_admin' ? '👑 Super Admin' :
+                 currentUser?.role === 'admin' ? '🛡️ Admin' :
+                 currentUser?.role === 'editor' ? '✍️ Editor' : '🎤 Reporter'}
+              </span>
+            </p>
           </div>
         </div>
 
@@ -997,6 +1039,49 @@ export const AdminDashboard: React.FC = () => {
       {/* Main Content Area */}
       <main className="flex-1 p-6 md:p-10 overflow-y-auto">
         
+        {/* Role Access & Profile Status Banner */}
+        <div className="mb-6 bg-white border border-slate-200 rounded-xl p-4 shadow-xs flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className={`w-11 h-11 rounded-xl flex items-center justify-center text-xl font-bold shadow-xs shrink-0 ${
+              currentUser?.role === 'super_admin' ? 'bg-amber-100 text-amber-800 border border-amber-300' :
+              currentUser?.role === 'admin' ? 'bg-blue-100 text-blue-800 border border-blue-300' :
+              currentUser?.role === 'editor' ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' :
+              'bg-purple-100 text-purple-800 border border-purple-300'
+            }`}>
+              {currentUser?.role === 'super_admin' ? '👑' :
+               currentUser?.role === 'admin' ? '🛡️' :
+               currentUser?.role === 'editor' ? '✍️' : '🎤'}
+            </div>
+            <div>
+              <div className="flex items-center gap-2 flex-wrap">
+                <h2 className="text-sm font-bold text-slate-900">{currentUser?.name}</h2>
+                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider ${
+                  currentUser?.role === 'super_admin' ? 'bg-amber-100 text-amber-800 border border-amber-200' :
+                  currentUser?.role === 'admin' ? 'bg-blue-100 text-blue-800 border border-blue-200' :
+                  currentUser?.role === 'editor' ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' :
+                  'bg-purple-100 text-purple-800 border border-purple-200'
+                }`}>
+                  {currentUser?.role === 'super_admin' ? 'সুপার এডমিন (Super Admin)' :
+                   currentUser?.role === 'admin' ? 'সাইট এডমিন (Admin)' :
+                   currentUser?.role === 'editor' ? 'প্রধান সম্পাদক (Editor)' : 'স্টাফ রিপোর্টার (Reporter)'}
+                </span>
+              </div>
+              <p className="text-[11px] text-slate-500 mt-0.5">
+                {currentUser?.role === 'super_admin' ? 'সম্পূর্ণ নিয়ন্ত্রণ: ২৫টি ট্যাব, ইউজার ও রোল তৈরি/ডিলিট, ব্যাকআপ, সিকিউরিটি ও সিস্টেম কনফিগারেশন।' :
+                 currentUser?.role === 'admin' ? 'প্রশাসনিক নিয়ন্ত্রণ: সংবাদ, ক্যাটাগরি, জেলা, বিজ্ঞাপন, পরিসংখ্যান, পেজ ও পাঠক মতামত পরিচালনা।' :
+                 currentUser?.role === 'editor' ? 'সম্পাদকীয় নিয়ন্ত্রণ: সংবাদ পর্যালোচনা ও অনুমোদন, প্রকাশনা, ব্রেকিং নিউজ ও মন্তব্য মডারেশন।' :
+                 'প্রতিবেদন নিয়ন্ত্রণ: সংবাদ লিখন, নিজস্ব খসড়া সংরক্ষণ ও মিডিয়া ফাইল আপলোড।'}
+              </p>
+            </div>
+          </div>
+          
+          <div className="flex items-center gap-2 shrink-0">
+            <span className="text-[11px] text-slate-600 font-mono bg-slate-100 px-2.5 py-1.5 rounded-lg border border-slate-200">
+              {currentUser?.email}
+            </span>
+          </div>
+        </div>
+
         {/* 1. Dashboard */}
         {activeTab === 'home' && (
           <div className="space-y-8">
@@ -1025,12 +1110,23 @@ export const AdminDashboard: React.FC = () => {
             </div>
 
             <div className="bg-white p-6 rounded-xl border shadow-xs space-y-4">
-              <h3 className="font-serif font-bold text-base text-slate-900">クイックアクション (Quick Actions)</h3>
+              <h3 className="font-serif font-bold text-base text-slate-900">কুইক অ্যাকশন (Quick Actions)</h3>
               <div className="flex flex-wrap gap-3">
-                <button onClick={() => { setIsEditingNews(true); setActiveTab('news'); }} className="bg-emerald-600 text-white px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-1.5 shadow-xs"><Plus className="w-4 h-4" /> New News</button>
-                <button onClick={() => setActiveTab('breaking')} className="bg-red-600 text-white px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-1.5 shadow-xs"><Flame className="w-4 h-4" /> Breaking News</button>
-                <button onClick={() => setActiveTab('users')} className="bg-slate-900 text-white px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-1.5 shadow-xs"><Users className="w-4 h-4" /> Add User</button>
-                <button onClick={() => setActiveTab('media')} className="bg-teal-700 text-white px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-1.5 shadow-xs"><Library className="w-4 h-4" /> Upload Media</button>
+                {isTabAllowed('news') && (
+                  <button onClick={() => { setIsEditingNews(true); setEditingArticleId(null); setActiveTab('news'); }} className="bg-emerald-600 text-white px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-1.5 shadow-xs"><Plus className="w-4 h-4" /> নতুন সংবাদ লিখুন</button>
+                )}
+                {isTabAllowed('breaking') && (
+                  <button onClick={() => setActiveTab('breaking')} className="bg-red-600 text-white px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-1.5 shadow-xs"><Flame className="w-4 h-4" /> ব্রেকিং নিউজ</button>
+                )}
+                {isTabAllowed('users') && (
+                  <button onClick={() => setActiveTab('users')} className="bg-slate-900 text-white px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-1.5 shadow-xs"><Users className="w-4 h-4" /> স্টাফ ব্যবস্থাপনা</button>
+                )}
+                {isTabAllowed('editorial') && (
+                  <button onClick={() => setActiveTab('editorial')} className="bg-amber-600 text-white px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-1.5 shadow-xs"><CheckCircle2 className="w-4 h-4" /> সম্পাদকীয় রিভিউ</button>
+                )}
+                {isTabAllowed('media') && (
+                  <button onClick={() => setActiveTab('media')} className="bg-teal-700 text-white px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-1.5 shadow-xs"><Library className="w-4 h-4" /> মিডিয়া আপলোড</button>
+                )}
               </div>
             </div>
           </div>
@@ -1133,10 +1229,18 @@ export const AdminDashboard: React.FC = () => {
 
                       {/* Author & Taxonomy (Category, Subcategory, District, Upazila) */}
                       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 bg-slate-50/50 p-4 rounded-xl border border-slate-200">
-                        <div>
                           <label className="block text-[11px] font-bold text-slate-700 mb-1">Author / Reporter</label>
-                          <input type="text" value={newsForm.reporterName} onChange={e => setNewsForm({ ...newsForm, reporterName: e.target.value })} className="w-full px-3 py-2 bg-white border rounded text-xs" />
-                        </div>
+                          <input 
+                            type="text" 
+                            value={newsForm.reporterName} 
+                            onChange={e => setNewsForm({ ...newsForm, reporterName: e.target.value })} 
+                            readOnly={currentUser?.role === 'reporter' || currentUser?.role === 'senior_reporter'}
+                            className={`w-full px-3 py-2 border rounded text-xs ${
+                              currentUser?.role === 'reporter' || currentUser?.role === 'senior_reporter' 
+                                ? 'bg-slate-100 text-slate-600 font-bold cursor-not-allowed' 
+                                : 'bg-white'
+                            }`} 
+                          />
                         <div>
                           <label className="block text-[11px] font-bold text-slate-700 mb-1">Category</label>
                           <select value={newsForm.category} onChange={e => setNewsForm({ ...newsForm, category: e.target.value })} className="w-full px-3 py-2 bg-white border rounded text-xs">
@@ -1509,11 +1613,20 @@ export const AdminDashboard: React.FC = () => {
                               onChange={e => setNewsForm({ ...newsForm, status: e.target.value as any })} 
                               className="w-full px-2 py-1.5 bg-slate-800 text-white border border-slate-700 rounded"
                             >
-                              <option value="published">Published (প্রকাশিত)</option>
-                              <option value="draft">Draft (খসড়া)</option>
-                              <option value="pending_review">Pending Review (রিভিউ পেন্ডিং)</option>
-                              <option value="scheduled">Scheduled (শিডিউলড)</option>
-                              <option value="trash">Trash (আবর্জনা)</option>
+                              {(currentUser?.role === 'reporter' || currentUser?.role === 'senior_reporter') ? (
+                                <>
+                                  <option value="pending_review">Pending Review (সম্পাদকীয় বিভাগে জমা দিন)</option>
+                                  <option value="draft">Draft (খসড়া হিসেবে রাখুন)</option>
+                                </>
+                              ) : (
+                                <>
+                                  <option value="published">Published (প্রকাশিত)</option>
+                                  <option value="draft">Draft (খসড়া)</option>
+                                  <option value="pending_review">Pending Review (রিভিউ পেন্ডিং)</option>
+                                  <option value="scheduled">Scheduled (শিডিউলড)</option>
+                                  <option value="trash">Trash (আবর্জনা)</option>
+                                </>
+                              )}
                             </select>
                           </div>
 
@@ -1688,23 +1801,31 @@ export const AdminDashboard: React.FC = () => {
                       </div>
 
                       <div className="flex gap-2 pt-1">
-                        <button 
-                          onClick={() => startEditArticle(art)} 
-                          className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white py-2 rounded-lg font-bold flex items-center justify-center gap-1.5 text-xs shadow-2xs transition"
-                        >
-                          <Edit className="w-3.5 h-3.5" /> সংশোধন করুন (Edit)
-                        </button>
-                        <button 
-                          onClick={() => {
-                            if (confirm('আপনি কি নিশ্চিতভাবে এই সংবাদটি ডিলিট করতে চান?')) {
-                              deleteArticle(art.id);
-                            }
-                          }} 
-                          className="bg-slate-100 hover:bg-rose-50 hover:text-rose-600 text-slate-500 px-3 py-2 rounded-lg flex items-center justify-center border border-slate-200 transition"
-                          title="Delete Article"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
+                        {canEditArticle(art) ? (
+                          <button 
+                            onClick={() => startEditArticle(art)} 
+                            className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white py-2 rounded-lg font-bold flex items-center justify-center gap-1.5 text-xs shadow-2xs transition"
+                          >
+                            <Edit className="w-3.5 h-3.5" /> সংশোধন করুন (Edit)
+                          </button>
+                        ) : (
+                          <span className="flex-1 bg-slate-100 text-slate-400 py-2 rounded-lg text-center text-[10px] font-bold">
+                            🔒 সম্পাদনা সংরক্ষিত
+                          </span>
+                        )}
+                        {canDeleteArticle(art) && (
+                          <button 
+                            onClick={() => {
+                              if (confirm('আপনি কি নিশ্চিতভাবে এই সংবাদটি ডিলিট করতে চান?')) {
+                                deleteArticle(art.id);
+                              }
+                            }} 
+                            className="bg-slate-100 hover:bg-rose-50 hover:text-rose-600 text-slate-500 px-3 py-2 rounded-lg flex items-center justify-center border border-slate-200 transition"
+                            title="Delete Article"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        )}
                       </div>
                     </div>
                   ))}
@@ -1760,8 +1881,14 @@ export const AdminDashboard: React.FC = () => {
                           </span>
                         </td>
                         <td className="p-4 text-right space-x-2">
-                          <button onClick={() => startEditArticle(art)} className="bg-slate-100 p-1.5 rounded hover:bg-slate-200" title="Edit Article"><Edit className="w-3.5 h-3.5" /></button>
-                          <button onClick={() => deleteArticle(art.id)} className="bg-slate-100 text-red-600 p-1.5 rounded hover:bg-red-50" title="Delete Article"><Trash2 className="w-3.5 h-3.5" /></button>
+                          {canEditArticle(art) ? (
+                            <button onClick={() => startEditArticle(art)} className="bg-slate-100 p-1.5 rounded hover:bg-slate-200" title="Edit Article"><Edit className="w-3.5 h-3.5" /></button>
+                          ) : (
+                            <span className="text-[10px] text-slate-400 italic">🔒 সংরক্ষিত</span>
+                          )}
+                          {canDeleteArticle(art) && (
+                            <button onClick={() => { if (confirm('আপনি কি নিশ্চিতভাবে এই সংবাদটি ডিলিট করতে চান?')) deleteArticle(art.id); }} className="bg-slate-100 text-red-600 p-1.5 rounded hover:bg-red-50" title="Delete Article"><Trash2 className="w-3.5 h-3.5" /></button>
+                          )}
                         </td>
                       </tr>
                     ))}
@@ -1820,6 +1947,17 @@ export const AdminDashboard: React.FC = () => {
 
         {/* 6. Staff & Users */}
         {activeTab === 'users' && (
+          currentUser?.role !== 'super_admin' ? (
+            <div className="bg-white p-8 rounded-xl border border-red-200 text-center space-y-3">
+              <div className="w-12 h-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto text-xl">
+                🔒
+              </div>
+              <h2 className="text-lg font-bold text-slate-900">অনুমতি সংরক্ষিত (Permission Denied)</h2>
+              <p className="text-xs text-slate-600 max-w-md mx-auto">
+                স্টাফ মেম্বার তৈরি, রোল পরিবর্তন ও ইউজার ম্যানেজমেন্ট শুধুমাত্র <strong>সুপার এডমিন (Super Admin)</strong> এর জন্য সংরক্ষিত।
+              </p>
+            </div>
+          ) : (
           <div className="space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div>
@@ -2307,6 +2445,7 @@ export const AdminDashboard: React.FC = () => {
               </div>
             )}
           </div>
+          )
         )}
 
         {/* 7. Editorial Workflow */}

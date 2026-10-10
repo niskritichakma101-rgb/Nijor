@@ -543,49 +543,90 @@ export const NewsProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const whitelisted = [
       {
         email: 'niskritichakma101@gmail.com',
-        pass: 'niskriti100',
+        pass: 'Niskriti123super',
         role: 'super_admin' as const,
         name: 'নিষ্কৃত চাকমা (Super Admin)',
         avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200'
       },
       {
-        email: 'nijoreditor1@gmail.com',
-        pass: 'edit123',
-        role: 'editor' as const,
-        name: 'নিজোর এডিটর (Editor)',
-        avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=200'
-      },
-      {
-        email: 'reporter123@gmail.com',
-        pass: 'report123n',
-        role: 'reporter' as const,
-        name: 'নিজোর রিপোর্টার (Reporter)',
-        avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&q=80&w=200'
+        email: 'superadmin@nijornews.com',
+        pass: 'Niskriti123super',
+        role: 'super_admin' as const,
+        name: 'নিষ্কৃত চাকমা (Super Admin)',
+        avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200'
       },
       {
         email: 'admin@nijornews.com',
-        pass: 'admin123',
+        pass: 'Admin100',
         role: 'admin' as const,
-        name: 'নিজোর অ্যাডমিন (Admin)',
+        name: 'সাইট অ্যাডমিন (Admin)',
         avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=200'
+      },
+      {
+        email: 'editor@nijornews.com',
+        pass: 'Cht1001',
+        role: 'editor' as const,
+        name: 'প্রধান সম্পাদক (Editor)',
+        avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=200'
+      },
+      {
+        email: 'nijoreditor1@gmail.com',
+        pass: 'Cht1001',
+        role: 'editor' as const,
+        name: 'প্রধান সম্পাদক (Editor)',
+        avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=200'
+      },
+      {
+        email: 'reporter@nijornews.com',
+        pass: 'nijor100',
+        role: 'reporter' as const,
+        name: 'স্টাফ রিপোর্টার (Reporter)',
+        avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=200'
+      },
+      {
+        email: 'reporter123@gmail.com',
+        pass: 'nijor100',
+        role: 'reporter' as const,
+        name: 'স্টাফ রিপোর্টার (Reporter)',
+        avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=200'
       }
     ];
 
     const found = whitelisted.find(acc => acc.email === emailLower);
     if (!found) {
-      return { success: false, error: '❌ এই ইমেইলটি অনুমোদিত তালিকায় পাওয়া যায়নি!' };
+      // Also check dynamic registered staff in users state
+      const dynamicUser = users.find(u => u.email.toLowerCase() === emailLower);
+      if (dynamicUser) {
+        if (dynamicUser.password && dynamicUser.password !== pass) {
+          return { success: false, error: '❌ ভুল পাসওয়ার্ড! অনুগ্রহ করে সঠিক পাসওয়ার্ড প্রদান করুন।' };
+        }
+        if (dynamicUser.status !== 'active') {
+          return { success: false, error: '❌ এই স্টাফ একাউন্টটি বর্তমানে নিষ্ক্রিয় রয়েছে!' };
+        }
+        const userObj: User = {
+          ...dynamicUser,
+          lastLogin: new Date().toLocaleTimeString('bn-BD')
+        };
+        setCurrentUser(userObj);
+        localStorage.setItem('nijor_current_user', JSON.stringify(userObj));
+        window.location.hash = '/admin';
+        setCurrentView('admin');
+        return { success: true };
+      }
+      return { success: false, error: '❌ এই ইমেইলটি অনুমোদিত স্টাফ তালিকায় পাওয়া যায়নি!' };
     }
     if (found.pass !== pass) {
       return { success: false, error: '❌ ভুল পাসওয়ার্ড! অনুগ্রহ করে সঠিক পাসওয়ার্ড প্রদান করুন।' };
     }
 
     const userObj: User = {
-      id: `usr-${found.role}-${Date.now()}`,
+      id: `usr-${found.role}`,
       name: found.name,
       email: found.email,
       role: found.role,
       status: 'active',
-      avatar: found.avatar
+      avatar: found.avatar,
+      lastLogin: new Date().toLocaleTimeString('bn-BD')
     };
 
     setCurrentUser(userObj);

@@ -57,8 +57,9 @@ async function generateContentWithRetry(params: any, maxRetries = 4, delayMs = 1
 
 async function getArticleData(id: string) {
   const projectId = 'refined-vista-kcbh2';
+  const apiKey = 'AIzaSyDv8YizE4IrTzMIzWacbnh4_axojnjAeqo';
   const dbId = 'ai-studio-nijornews-1efdbe8e-44bf-4d08-8903-51b8518e074d';
-  const url = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/${dbId}/documents/articles/${id}`;
+  const url = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/${dbId}/documents/articles/${id}?key=${apiKey}`;
   
   try {
     const res = await fetch(url);
@@ -286,36 +287,51 @@ Current Settings: ${JSON.stringify(currentSettings)}`;
   });
 
   // Real-time image proxy route to serve Base64 database images as binary files for Social Crawlers
-  app.get('/api/image/:id', async (req, res) => {
+  app.get(['/api/image/:id', '/api/image/:id.jpg'], async (req, res) => {
     try {
-      const id = req.params.id;
+      const rawId = req.params.id || '';
+      const id = rawId.replace(/\.(jpg|jpeg|png|webp)$/i, '');
       const article = await getArticleData(id);
+      const defaultFallback = 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?fm=jpg&q=80&w=1200&h=630&fit=crop';
       
       if (!article || !article.image) {
-        // Fallback placeholder image if not found
-        return res.redirect('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&q=80&w=1200');
+        return res.redirect(defaultFallback);
       }
 
-      let base64Data = article.image;
-      let contentType = 'image/jpeg';
+      const imageStr = article.image;
 
-      // Parse and extract from Data URI format if present
-      if (base64Data.startsWith('data:')) {
-        const mimeMatch = base64Data.match(/^data:([^;]+);base64,/);
+      // Parse and extract from Data URI format if present (uploaded images)
+      if (imageStr.startsWith('data:')) {
+        let contentType = 'image/jpeg';
+        const mimeMatch = imageStr.match(/^data:([^;]+);base64,/);
         if (mimeMatch) {
           contentType = mimeMatch[1];
         }
-        base64Data = base64Data.split(',')[1];
+        const base64Data = imageStr.split(',')[1] || '';
+        const imgBuffer = Buffer.from(base64Data, 'base64');
+        
+        res.setHeader('Content-Type', contentType);
+        res.setHeader('Cache-Control', 'public, max-age=604800, immutable');
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        return res.send(imgBuffer);
       }
 
-      const imgBuffer = Buffer.from(base64Data, 'base64');
-      
-      res.setHeader('Content-Type', contentType);
-      res.setHeader('Cache-Control', 'public, max-age=86400'); // Cache for 24 hours
-      return res.send(imgBuffer);
+      // External URL (Unsplash or CDN)
+      if (imageStr.startsWith('http')) {
+        let cleanUrl = imageStr;
+        if (cleanUrl.includes('images.unsplash.com')) {
+          cleanUrl = cleanUrl.replace(/auto=format/g, 'fm=jpg');
+          if (!cleanUrl.includes('fm=')) {
+            cleanUrl += (cleanUrl.includes('?') ? '&' : '?') + 'fm=jpg&w=1200&h=630&fit=crop';
+          }
+        }
+        return res.redirect(cleanUrl);
+      }
+
+      return res.redirect(defaultFallback);
     } catch (err) {
       console.error('Error rendering image proxy:', err);
-      return res.redirect('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&q=80&w=1200');
+      return res.redirect('https://images.unsplash.com/photo-1506744038136-46273834b3fb?fm=jpg&q=80&w=1200&h=630&fit=crop');
     }
   });
 
@@ -345,9 +361,17 @@ Current Settings: ${JSON.stringify(currentSettings)}`;
         // Resolve absolute image URL: prefer direct article image if available
         const host = req.get('host') || 'nijornews.netlify.app';
         const protocol = req.secure || req.headers['x-forwarded-proto'] === 'https' ? 'https' : 'http';
-        const absoluteImageUrl = (article.image && article.image.startsWith('http')) 
-          ? article.image 
-          : `${protocol}://${host}/api/image/${id}`;
+        let absoluteImageUrl = `${protocol}://${host}/api/image/${id}.jpg`;
+        if (article.image && article.image.startsWith('http') && !article.image.startsWith('data:')) {
+          let clean = article.image;
+          if (clean.includes('images.unsplash.com')) {
+            clean = clean.replace(/auto=format/g, 'fm=jpg');
+            if (!clean.includes('fm=')) {
+              clean += (clean.includes('?') ? '&' : '?') + 'fm=jpg&w=1200&h=630&fit=crop';
+            }
+          }
+          absoluteImageUrl = clean;
+        }
 
         const canonicalUrl = `https://nijornews.netlify.app/n/${id}`;
 
@@ -362,9 +386,10 @@ Current Settings: ${JSON.stringify(currentSettings)}`;
           <meta property="og:image:width" content="1200" />
           <meta property="og:image:height" content="630" />
           <meta property="og:image:type" content="image/jpeg" />
-          <meta property="og:url" content="${canonicalUrl}" />
           <meta property="og:type" content="article" />
-          <meta property="fb:app_id" content="291494419107518" />
+          <meta property="og:locale" content="bn_BD" />
+          <link rel="image_src" href="${absoluteImageUrl}" />
+          <link rel="canonical" href="${canonicalUrl}" />
           <meta name="twitter:card" content="summary_large_image" />
           <meta name="twitter:site" content="@nijornews" />
           <meta name="twitter:title" content="${article.title}" />
@@ -372,7 +397,11 @@ Current Settings: ${JSON.stringify(currentSettings)}`;
           <meta name="twitter:image" content="${absoluteImageUrl}" />
           <script>
             // Instant redirect for human readers to the client app hash route
-            window.location.href = "/#/article/${id}";
+            try {
+              window.location.replace("/#/article/${id}");
+            } catch (e) {
+              window.location.href = "/#/article/${id}";
+            }
           </script>
         `;
         

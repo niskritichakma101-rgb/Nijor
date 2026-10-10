@@ -189,7 +189,7 @@ export const ArticleDetailPage: React.FC = () => {
           />
 
           {/* Social Share Bar */}
-          <SocialShare title={article.title} url={`${window.location.origin}/n/${article.id}`} />
+          <SocialShare title={article.title} url={`https://nijornews.netlify.app/n/${article.id}`} image={article.image} />
 
           {/* Tags */}
           <div className="flex flex-wrap items-center gap-2 pt-4">

@@ -1,4 +1,8 @@
 # Netlify Redirects for Nijor News (https://nijornews.netlify.app)
+# Dynamic Image Proxy for Facebook, Messenger, WhatsApp (JPEG/PNG direct output)
+/api/image/:id.jpg /.netlify/functions/image?id=:id 200!
+/api/image/:id     /.netlify/functions/image?id=:id 200!
+
 # Dynamic Open Graph & Social Media Preview for News Links
 /n/:id       /.netlify/functions/og?id=:id   200!
 /article/:id /.netlify/functions/og?id=:id   200!

@@ -196,67 +196,71 @@ export const initialSecurityLogs: SecurityLog[] = [
 
 export const initialUsers: User[] = [
   {
-    id: 'usr-1',
-    name: 'নিখিলেশ চাকমা',
-    email: 'admin@nijornews.com',
+    id: 'usr-super-admin',
+    name: 'নিষ্কৃত চাকমা (Super Admin)',
+    email: 'niskritichakma101@gmail.com',
     role: 'super_admin',
+    password: 'Niskriti123super',
     avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200',
-    bio: 'প্রধান সম্পাদক ও প্রকাশক, নিজোর নিউজ।',
+    bio: 'সুপার অ্যাডমিন ও প্রকাশক, নিজোর নিউজ। সম্পূর্ণ সিস্টেম ও ইউজার নিয়ন্ত্রণ।',
     status: 'active',
     phone: '+৮৮ ০১৭১১-১১১১১১',
     assignedDistrict: 'রাঙামাটি',
-    assignedCategory: 'পার্বত্য চট্টগ্রাম',
-    lastLogin: 'আজ, ০২:০০',
+    assignedCategory: 'সার্বিক নিয়ন্ত্রণ',
+    lastLogin: 'আজ, সক্রিয়',
     activityHistory: [
-      { id: 'act-1', action: 'ড্যাশবোর্ড প্রবেশ', timestamp: '২০২৬-০৯-৩০ ০২:০০', ip: '192.168.1.50' }
+      { id: 'act-1', action: 'ড্যাশবোর্ড সুপার এডমিন প্রবেশ', timestamp: '২০২৬-১০-১০ ১২:০০', ip: '192.168.1.1' }
     ]
   },
   {
-    id: 'usr-2',
-    name: 'মং শৈ প্রু চৌধুরী',
-    email: 'editor@nijornews.com',
+    id: 'usr-admin',
+    name: 'সাইট অ্যাডমিন (Admin)',
+    email: 'admin@nijornews.com',
     role: 'admin',
-    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=200',
-    bio: 'নির্বাহী সম্পাদক',
+    password: 'Admin100',
+    avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=200',
+    bio: 'সাইট অ্যাডমিন ও অপারেশনাল এক্সিকিউটিভ। সংবাদ, বিজ্ঞাপন ও পাতা নিয়ন্ত্রণ।',
     status: 'active',
     phone: '+৮৮ ০১৭১১-২২২২২২',
     assignedDistrict: 'খাগড়াছড়ি',
-    assignedCategory: 'জাতীয়',
-    lastLogin: 'গতকাল',
+    assignedCategory: 'প্রশাসনিক ব্যবস্থাপনা',
+    lastLogin: 'আজ',
     activityHistory: [
-      { id: 'act-2', action: 'বিজ্ঞাপন প্রকাশ', timestamp: '২০২৬-০৯-২৯ ১৪:১৫', ip: '192.168.1.51' }
+      { id: 'act-2', action: 'বিজ্ঞাপন ও পাতা হালনাগাদ', timestamp: '২০২৬-১০-১০ ১১:১৫', ip: '192.168.1.2' }
     ]
   },
   {
-    id: 'usr-3',
-    name: 'প্রীতি চাকমা',
-    email: 'reporter.priti@nijornews.com',
-    role: 'reporter',
-    avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=200',
-    bio: 'বিশেষ প্রতিনিধি, রাঙামাটি',
+    id: 'usr-editor',
+    name: 'প্রধান সম্পাদক (Editor)',
+    email: 'editor@nijornews.com',
+    role: 'editor',
+    password: 'Cht1001',
+    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=200',
+    bio: 'প্রধান সম্পাদক ও বার্তা প্রধান। সম্পাদকীয় রিভিউ, সংবাদ প্রকাশ ও ব্রেকিং নিউজ।',
     status: 'active',
     phone: '+৮৮ ০১৭১১-৩৩৩৩৩৩',
-    assignedDistrict: 'রাঙামাটি',
-    assignedCategory: 'রাজনীতি',
-    lastLogin: 'আজ, ১০:১৫',
+    assignedDistrict: 'বান্দরবান',
+    assignedCategory: 'সম্পাদকীয় বিভাগ',
+    lastLogin: 'আজ',
     activityHistory: [
-      { id: 'act-3', action: 'সংবাদ খসড়া সংরক্ষণ', timestamp: '২০২৬-০৯-৩০ ১০:১৫', ip: '192.168.1.52' }
+      { id: 'act-3', action: 'সম্পাদকীয় অনুমোদন ও প্রকাশ', timestamp: '২০২৬-১০-১০ ১০:৩০', ip: '192.168.1.3' }
     ]
   },
   {
-    id: 'usr-4',
-    name: 'সৈকত বড়ুয়া',
-    email: 'contributor.saikat@nijornews.com',
-    role: 'moderator',
-    avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=200',
-    bio: 'মডারেটর ও কন্ট্রিবিউটর',
+    id: 'usr-reporter',
+    name: 'স্টাফ রিপোর্টার (Reporter)',
+    email: 'reporter@nijornews.com',
+    role: 'reporter',
+    password: 'nijor100',
+    avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=200',
+    bio: 'মাঠ পর্যায়ের সংবাদ সংগ্রহকারী ও স্টাফ রিপোর্টার।',
     status: 'active',
     phone: '+৮৮ ০১৭১১-৪৪৪৪৪৪',
-    assignedDistrict: 'বান্দরবান',
-    assignedCategory: 'খেলাধুলা',
-    lastLogin: '৩ দিন আগে',
+    assignedDistrict: 'রাঙামাটি',
+    assignedCategory: 'পার্বত্য চট্টগ্রাম',
+    lastLogin: 'আজ',
     activityHistory: [
-      { id: 'act-4', action: 'মন্তব্য অনুমোদন', timestamp: '২০২৬-০৯-২৭ ০৯:৩০', ip: '192.168.1.53' }
+      { id: 'act-4', action: 'সংবাদ খসড়া ও প্রতিবেদন জমা', timestamp: '২০২৬-১০-১০ ০৯:৪৫', ip: '192.168.1.4' }
     ]
   }
 ];

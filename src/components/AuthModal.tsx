@@ -19,6 +19,10 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!email.trim() || !password.trim()) {
+      setErrorMessage('অনুগ্রহ করে আপনার ইমেইল এবং পাসওয়ার্ড উভয়ই প্রদান করুন।');
+      return;
+    }
     setErrorMessage('');
     setLoading(true);
 
@@ -35,7 +39,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
       } else {
         setErrorMessage(res.error || 'ভুল ইমেইল অথবা পাসওয়ার্ড! অনুগ্রহ করে আবার চেষ্টা করুন।');
       }
-    }, 500); // realistic check duration
+    }, 400);
   };
 
   return (
@@ -46,7 +50,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
         <div className="bg-emerald-800 text-white p-6 relative">
           <button 
             onClick={onClose}
-            className="absolute top-4 right-4 text-emerald-200 hover:text-white transition-colors"
+            className="absolute top-4 right-4 text-emerald-200 hover:text-white transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -83,7 +87,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
 
             <div className="bg-slate-50 border p-3 rounded-lg text-slate-600 leading-relaxed space-y-1">
               <p className="font-bold text-slate-800">🔒 প্রবেশাধিকার নোটিশ (Notice):</p>
-              <p>এটি নিজোর নিউজ পোর্টালের একটি সম্পূর্ণ সুরক্ষিত স্টাফ প্যানেল। আপনার অনুমোদিত প্রাতিষ্ঠানিক ইমেইল এবং পাসওয়ার্ড প্রদান করে সিস্টেমে প্রবেশ করুন।</p>
+              <p className="text-[11px] text-slate-500">এটি নিজোর নিউজ পোর্টালের একটি সম্পূর্ণ সুরক্ষিত স্টাফ প্যানেল। আপনার অনুমোদিত প্রাতিষ্ঠানিক ইমেইল এবং গোপন পাসওয়ার্ড প্রদান করে সিস্টেমে প্রবেশ করুন।</p>
             </div>
 
             {/* Email Input */}
@@ -94,10 +98,11 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                 <input 
                   type="email" 
                   required
+                  autoComplete="email"
                   value={email}
                   onChange={e => { setEmail(e.target.value); setErrorMessage(''); }}
                   className="w-full pl-10 pr-3 py-2.5 bg-slate-50 border border-slate-300 rounded-lg focus:outline-hidden focus:ring-2 focus:ring-emerald-600 font-mono text-xs font-bold"
-                  placeholder="যেমন: editor@nijornews.com"
+                  placeholder="আপনার অনুমোদিত ইমেইল লিখুন"
                 />
               </div>
             </div>
@@ -110,6 +115,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                 <input 
                   type="password" 
                   required
+                  autoComplete="current-password"
                   value={password}
                   onChange={e => { setPassword(e.target.value); setErrorMessage(''); }}
                   className="w-full pl-10 pr-3 py-2.5 bg-slate-50 border border-slate-300 rounded-lg focus:outline-hidden focus:ring-2 focus:ring-emerald-600 font-mono text-xs font-bold"

@@ -4,7 +4,11 @@
   functions = "netlify/functions"
   edge_functions = "netlify/edge-functions"
 
-# Netlify Edge Functions for ultra-fast Social Media Preview
+# Netlify Edge Functions for ultra-fast Social Media Preview & Images
+[[edge_functions]]
+  path = "/api/image/*"
+  function = "image"
+
 [[edge_functions]]
   path = "/n/*"
   function = "og"
@@ -12,6 +16,17 @@
 [[edge_functions]]
   path = "/article/*"
   function = "og"
+
+# Dynamic Image server fallback
+[[redirects]]
+  from = "/api/image/:id.jpg"
+  to = "/.netlify/functions/image?id=:id"
+  status = 200
+
+[[redirects]]
+  from = "/api/image/:id"
+  to = "/.netlify/functions/image?id=:id"
+  status = 200
 
 # Dynamic OG generator fallback for Facebook, Messenger, WhatsApp, Twitter
 [[redirects]]
